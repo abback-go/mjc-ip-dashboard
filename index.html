@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>명지전문대학 산학협력처 · IP 등록 현황 대시보드</title>
+<style>
+  :root{
+    --navy:#0F2547; --navy-2:#1c3a63; --gold:#B8975A; --gold-soft:#e9dcc1;
+    --bg:#eef1f6; --card:#ffffff; --line:#e4e8f0;
+    --text:#1f2a3d; --muted:#6b7689; --muted-2:#9aa4b5;
+    --t-patent:#2563eb; --t-util:#0891b2; --t-design:#db2777; --t-trademark:#d97706; --t-copyright:#7c3aed;
+    --s-app:#64748b; --s-exam:#d97706; --s-reg:#16a34a; --s-reject:#dc2626; --s-drop:#94a3b8;
+    --shadow:0 1px 3px rgba(15,37,71,.06), 0 6px 20px rgba(15,37,71,.06);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Pretendard","Malgun Gothic","맑은 고딕",system-ui,-apple-system,sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+
+  /* ---------- Header ---------- */
+  header.topbar{
+    background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);
+    color:#fff; padding:20px 28px;
+    display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+    box-shadow:0 4px 18px rgba(15,37,71,.18);
+  }
+  .brand{display:flex; align-items:center; gap:14px; flex:1 1 auto; min-width:260px;}
+  .brand .mark{
+    width:46px;height:46px;border-radius:12px;flex:none;
+    background:linear-gradient(135deg,var(--gold) 0%,#d9c290 100%);
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;color:var(--navy);font-size:20px;letter-spacing:-1px;
+    box-shadow:0 2px 8px rgba(184,151,90,.4);
+  }
+  .brand h1{font-size:19px;margin:0;font-weight:700;letter-spacing:-.3px;}
+  .brand .sub{font-size:12.5px;color:#b9c6dc;margin-top:2px;}
+  .topbar-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .file-pill{
+    font-size:12.5px;color:#cdd8ea;background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.14); padding:7px 12px;border-radius:999px;
+    max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .file-pill b{color:#fff;font-weight:600;}
+  .btn{
+    border:none;cursor:pointer;font-family:inherit;font-size:13.5px;font-weight:600;
+    padding:9px 16px;border-radius:9px;display:inline-flex;align-items:center;gap:7px;
+    transition:transform .08s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-gold{background:var(--gold);color:var(--navy);box-shadow:0 2px 10px rgba(184,151,90,.35);}
+  .btn-gold:hover{background:#c8a667;}
+  .btn-ghost{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);}
+  .btn-ghost:hover{background:rgba(255,255,255,.18);}
+
+  /* ---------- Layout ---------- */
+  main{max-width:1320px;margin:0 auto;padding:26px 24px 60px;}
+  .section-label{
+    font-size:12px;font-weight:700;letter-spacing:1.5px;color:var(--muted);
+    text-transform:uppercase;margin:30px 2px 12px;display:flex;align-items:center;gap:10px;
+  }
+  .section-label::before{content:"";width:4px;height:14px;background:var(--gold);border-radius:2px;}
+  .section-label:first-child{margin-top:6px;}
+
+  /* ---------- KPI ---------- */
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;}
+  .kpi{
+    background:var(--card);border-radius:14px;padding:18px 18px 16px;box-shadow:var(--shadow);
+    border:1px solid var(--line);position:relative;overflow:hidden;
+  }
+  .kpi::after{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent,var(--navy));}
+  .kpi .k-label{font-size:13px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:7px;}
+  .kpi .k-ico{font-size:15px;}
+  .kpi .k-val{font-size:30px;font-weight:800;letter-spacing:-1px;margin:8px 0 2px;color:var(--text);}
+  .kpi .k-val small{font-size:15px;font-weight:700;color:var(--muted);margin-left:3px;}
+  .kpi .k-sub{font-size:12.5px;color:var(--muted-2);font-weight:500;}
+  .kpi .k-sub b{color:var(--accent,var(--navy));font-weight:700;}
+
+  /* ---------- Charts ---------- */
+  .charts{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
+  .card{
+    background:var(--card);border-radius:14px;padding:18px 20px 20px;box-shadow:var(--shadow);
+    border:1px solid var(--line);
+  }
+  .card.full{grid-column:1 / -1;}
+  .card h3{margin:0 0 2px;font-size:15.5px;font-weight:700;letter-spacing:-.2px;}
+  .card .c-desc{font-size:12px;color:var(--muted-2);margin:0 0 14px;}
+  .chart-wrap{position:relative;height:300px;}
+  .chart-wrap.tall{height:340px;}
+
+  /* ---------- Table ---------- */
+  .table-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
+  .table-toolbar input[type=search], .table-toolbar select{
+    font-family:inherit;font-size:13.5px;padding:8px 12px;border:1px solid var(--line);
+    border-radius:9px;background:#fafbfd;color:var(--text);outline:none;
+  }
+  .table-toolbar input[type=search]{flex:1 1 240px;min-width:180px;}
+  .table-toolbar input:focus, .table-toolbar select:focus{border-color:var(--gold);background:#fff;}
+  .table-count{font-size:12.5px;color:var(--muted);margin-left:auto;font-weight:600;}
+  .table-scroll{overflow-x:auto;border-radius:10px;border:1px solid var(--line);}
+  table{border-collapse:collapse;width:100%;font-size:13px;min-width:880px;}
+  thead th{
+    background:var(--navy);color:#dfe7f3;font-weight:600;font-size:12px;text-align:left;
+    padding:11px 12px;white-space:nowrap;position:sticky;top:0;letter-spacing:.2px;
+  }
+  tbody td{padding:10px 12px;border-bottom:1px solid #eef1f6;white-space:nowrap;color:var(--text);}
+  tbody tr:nth-child(even){background:#fafbfd;}
+  tbody tr:hover{background:#f0f4fb;}
+  td.title-cell{white-space:normal;min-width:200px;font-weight:600;}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;}
+  .badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;
+    padding:3px 9px;border-radius:999px;white-space:nowrap;}
+  .badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;}
+  .empty-row td{text-align:center;color:var(--muted);padding:30px;font-weight:500;}
+
+  /* ---------- Dropzone overlay ---------- */
+  .drop-hint{font-size:12px;color:var(--muted-2);margin-top:6px;}
+  body.dragging::after{
+    content:"엑셀 파일을 여기에 놓으세요";
+    position:fixed;inset:14px;border:3px dashed var(--gold);border-radius:18px;
+    background:rgba(15,37,71,.78);color:#fff;font-size:22px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(2px);
+  }
+
+  footer{text-align:center;color:var(--muted-2);font-size:12px;padding:24px;}
+  .legend-inline{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px;}
+  .legend-inline span{display:inline-flex;align-items:center;gap:6px;}
+  .legend-inline i{width:11px;height:11px;border-radius:3px;display:inline-block;}
+
+  @media (max-width:900px){
+    .charts{grid-template-columns:1fr;}
+    .card.full{grid-column:auto;}
+    main{padding:20px 14px 50px;}
+    header.topbar{padding:16px 16px;}
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="mark">IP</div>
+    <div>
+      <h1>IP 등록 현황 대시보드</h1>
+      <div class="sub">명지전문대학 산학협력처 · 지식재산권 출원/등록 현황</div>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <span class="file-pill" id="filePill">데이터: <b id="fileName">샘플 데이터</b></span>
+    <button class="btn btn-gold" id="uploadBtn">📁 엑셀 업로드</button>
+    <button class="btn btn-ghost" id="sampleBtn">샘플 보기</button>
+    <input type="file" id="fileInput" accept=".xlsx,.xlsm,.xls" hidden />
+  </div>
+</header>
+
+<main>
+  <div class="section-label">핵심 지표</div>
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <div class="section-label">시각화</div>
+  <div class="charts">
+    <div class="card full">
+      <h3>연도별 출원 · 등록 추이</h3>
+      <p class="c-desc">출원일자 기준 출원 건수와 등록일자 기준 등록 건수</p>
+      <div class="chart-wrap"><canvas id="chartTrend"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>IP 유형별 분포</h3>
+      <p class="c-desc">출원된 전체 건의 권리 유형 구성</p>
+      <div class="chart-wrap"><canvas id="chartType"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>진행 상태별 현황</h3>
+      <p class="c-desc">출원 · 심사중 · 등록 · 거절 · 포기</p>
+      <div class="chart-wrap"><canvas id="chartStatus"></canvas></div>
+    </div>
+    <div class="card full">
+      <h3>학과별 IP 실적</h3>
+      <p class="c-desc">소속학과별 출원 / 등록 건수 (실적 있는 학과)</p>
+      <div class="chart-wrap tall"><canvas id="chartDept"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>학생 발명자 참여율 추이</h3>
+      <p class="c-desc">연도별 학생 참여 출원 비율 · 목표선 <b id="targetTxt">40%</b></p>
+      <div class="chart-wrap"><canvas id="chartStudent"></canvas></div>
+    </div>
+    <div class="card">
+      <h3>연도별 IP 비용</h3>
+      <p class="c-desc">출원료 · 심사청구료는 출원연도, 등록료는 등록연도 기준</p>
+      <div class="chart-wrap"><canvas id="chartCost"></canvas></div>
+    </div>
+  </div>
+
+  <div class="section-label">IP 등록대장 상세</div>
+  <div class="card full">
+    <div class="table-toolbar">
+      <input type="search" id="tableSearch" placeholder="명칭 · 발명자 · 출원번호 검색…" />
+      <select id="filterType"><option value="">전체 유형</option></select>
+      <select id="filterStatus"><option value="">전체 상태</option></select>
+      <span class="table-count" id="tableCount"></span>
+    </div>
+    <div class="table-scroll">
+      <table id="ledgerTable">
+        <thead><tr>
+          <th>No.</th><th>유형</th><th>발명 · 디자인 명칭</th><th>출원일자</th>
+          <th>권리자</th><th>발명자</th><th>학생</th><th>소속학과</th>
+          <th>상태</th><th>등록일자</th><th>연계과제</th><th style="text-align:right">합계비용</th>
+        </tr></thead>
+        <tbody id="ledgerBody"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<footer>
+  명지전문대학 산학협력처 IP 등록 현황 대시보드 · 엑셀(.xlsx) 업로드 시 자동 분석 ·
+  데이터는 브라우저 내에서만 처리되며 외부로 전송되지 않습니다.
+</footer>
+
+<script src="libs/xlsx.full.min.js"></script>
+<script src="libs/chart.umd.min.js"></script>
+<script src="sample-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
